@@ -1,4 +1,4 @@
-# HGNN---Hierarchical-graph-Neural-Network
+# HGNN-Hierarchical-graph-Neural-Network
 
 This is the repository for the paper "Interpretable Machine Learning Model for Grading Facial Weakness in Facioscapulohumeral Muscular Dystrophy". The code will be publicly available once the paper is accepted for publication.
 
