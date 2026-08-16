@@ -1,0 +1,49 @@
+name: hgnn-fshd
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.8.18
+  - pip=23.3.1
+  - git=2.43.0
+  - dlib=19.24.2
+  - av=10.0.0
+  - ffmpeg=4.4
+  - pip:
+      - --find-links https://download.pytorch.org/whl/torch_stable.html
+      - --find-links https://data.pyg.org/whl/torch-1.9.0+cu111.html
+      - torch==1.9.0+cu111
+      - torchvision==0.10.0+cu111
+      - torch-scatter==2.0.9
+      - torch-sparse==0.6.12
+      - torch-cluster==1.5.9
+      - torch-spline-conv==1.2.1
+      - torch-geometric==2.0.4
+      - numpy==1.23.5
+      - pandas==1.5.3
+      - matplotlib==3.7.5
+      - scipy==1.10.1
+      - scikit-learn==1.3.2
+      - shap==0.41.0
+      - xgboost==1.7.6
+      - joblib==1.2.0
+      - opencv-python==4.8.1.78
+      - face-alignment==1.3.5
+      - openpyxl==3.1.2
+      - numba==0.58.1
+      - numexpr==2.8.4
+      - seaborn==0.12.2
+      - nltools==0.4.7
+      - scikit-image==0.21.0
+      - h5py==3.10.0
+      - Pillow==10.1.0
+      - PyWavelets==1.4.1
+      - tqdm==4.66.1
+      - kornia==0.6.12
+      - easing-functions==1.0.4
+      - celluloid==0.2.0
+      - cloudpickle==2.2.1
+      - packaging==23.2
+      - slicer==0.0.7
+      - py-feat==0.6.1
+      - git+https://github.com/cmusatyalab/openface.git@0.2.2
