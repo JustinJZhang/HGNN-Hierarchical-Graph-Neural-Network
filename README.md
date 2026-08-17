@@ -31,9 +31,7 @@ The model processes 41 de-identified features per expression:
 
 | File                        | Description                                                                             |
 |-----------------------------|-----------------------------------------------------------------------------------------|
-| `assets/`                   | Figures extracted from the manuscript                                                   |
 | `config.py`                 | Expression, action-unit, asymmetry-feature, and class definitions                       |
-| `environment.yml`           | Conda environment                                                                       |
 | `graph.py`                  | Expression, action-unit, and facial-asymmetry graph definitions                         |
 | `metrics.py`                | Classification metric definitions and calculations                                     |
 | `model.py`                  | HGNN architecture                                                                       |
