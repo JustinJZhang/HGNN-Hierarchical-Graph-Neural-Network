@@ -92,6 +92,11 @@ The experiments used an NVIDIA RTX 3090 GPU and an Intel Xeon CPU. Create the en
 conda env create -f environment.yml
 conda activate hgnn-fshd
 ```
+Please refer to and install the facial landmark analysis toolbox from
+
+- OpenFace 2.2.0: https://github.com/tadasbaltrusaitis/openface
+- Py-FEAT: https://github.com/cosanlab/py-feat
+- FAN: https://github.com/1adrianb/face-alignment
 
 Update the 68-point landmark predictor path in `get_facial_landmarks.py` after the environment is created.
 
