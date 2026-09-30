@@ -2,14 +2,16 @@ import numpy as np
 
 
 METRIC_KEYS = (
-    "sens_score",
-    "spec_score",
-    "prec_score",
-    "acc_score",
-    "sens_side",
-    "spec_side",
-    "prec_side",
-    "acc_side",
+    "sens_severity",
+    "spec_severity",
+    "prec_severity",
+    "acc_severity_ovr",
+    "acc_severity",
+    "sens_asymmetry",
+    "spec_asymmetry",
+    "prec_asymmetry",
+    "acc_asymmetry_ovr",
+    "acc_asymmetry",
 )
 
 
@@ -32,28 +34,36 @@ def _compute_confusion(ground_truth, predictions, num_classes):
 
 
 def _safe_divide(numerator, denominator):
-    """Divide arrays with shape [C] and return finite values with shape [C]."""
     result = np.zeros_like(numerator, dtype=np.float64)
     return np.divide(numerator, denominator, out=result, where=denominator != 0)
 
 
 def _classification_metrics(ground_truth, predictions, num_classes):
-    """Calculate sensitivity, specificity, precision, and accuracy arrays with shape [C]."""
+    """Return per-class metrics [C] and multiclass accuracy.
+
+    Args:
+        ground_truth: Integer ground-truth class indices with shape [N].
+        predictions: Integer predicted class indices with shape [N].
+        num_classes: Integer number of classes C.
+    Returns:
+        Sensitivity, specificity, precision, and one-vs-rest accuracy arrays
+        with shape [C], followed by multiclass task accuracy.
+    """
     true_positive, true_negative, false_positive, false_negative = _compute_confusion(
         ground_truth, predictions, num_classes
     )
     sensitivity = _safe_divide(true_positive, true_positive + false_negative)
     specificity = _safe_divide(true_negative, true_negative + false_positive)
     precision = _safe_divide(true_positive, true_positive + false_positive)
-    accuracy = _safe_divide(
+    one_vs_rest_accuracy = _safe_divide(
         true_positive + true_negative,
         true_positive + true_negative + false_positive + false_negative,
     )
-    return sensitivity, specificity, precision, accuracy
+    task_accuracy = np.mean(ground_truth == predictions)
+    return sensitivity, specificity, precision, one_vs_rest_accuracy, task_accuracy
 
 
 def get_classification_metrics(labels, predictions, num_classes=3):
-    """Calculate eight per-class metric arrays from labels and logits with shape [N,2,C]."""
     severity_labels = np.argmax(labels[:, 0, :], axis=1)
     asymmetry_labels = np.argmax(labels[:, 1, :], axis=1)
     severity_predictions = np.argmax(predictions[:, 0, :], axis=1)

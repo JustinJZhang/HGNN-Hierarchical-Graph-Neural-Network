@@ -10,16 +10,20 @@ from config import (
     NUM_ASYMMETRY_FEATURES,
     NUM_EXPRESSIONS,
 )
-from util import load_obj
+from util import load_obj, parse_experiment_args
 
 DATA_PATH = "AU_asymmetry_data.pkl"
 OUTPUT_PATH = "data_statistic.xlsx"
 NUM_CLASSES = 3
 
 
-def main():
-    """Aggregate labels [N,2,3], AU [N,8,17], and FA [N,8,24] into class means."""
-    data = load_obj(DATA_PATH)
+def main(argv=None):
+    args = parse_experiment_args(
+        "Export class-wise feature summaries.",
+        {"data_path": DATA_PATH, "output_path": OUTPUT_PATH},
+        argv,
+    )
+    data = load_obj(args.data_path)
     subjects = list(data.keys())
     X_au = np.zeros((len(subjects), NUM_EXPRESSIONS, NUM_ACTION_UNITS))
     X_fa = np.zeros((len(subjects), NUM_EXPRESSIONS, NUM_ASYMMETRY_FEATURES))
@@ -41,43 +45,56 @@ def main():
             for expression in EXPRESSIONS
         ])
 
-    score_exp_fa = np.zeros((NUM_CLASSES, NUM_EXPRESSIONS, NUM_ASYMMETRY_FEATURES))
-    score_exp_au = np.zeros((NUM_CLASSES, NUM_EXPRESSIONS, NUM_ACTION_UNITS))
-    side_exp_fa = np.zeros((NUM_CLASSES, NUM_EXPRESSIONS, NUM_ASYMMETRY_FEATURES))
-    side_exp_au = np.zeros((NUM_CLASSES, NUM_EXPRESSIONS, NUM_ACTION_UNITS))
-    count_score = np.zeros(NUM_CLASSES)
-    count_side = np.zeros(NUM_CLASSES)
+    severity_exp_fa = np.zeros((NUM_CLASSES, NUM_EXPRESSIONS, NUM_ASYMMETRY_FEATURES))
+    severity_exp_au = np.zeros((NUM_CLASSES, NUM_EXPRESSIONS, NUM_ACTION_UNITS))
+    asymmetry_exp_fa = np.zeros((NUM_CLASSES, NUM_EXPRESSIONS, NUM_ASYMMETRY_FEATURES))
+    asymmetry_exp_au = np.zeros((NUM_CLASSES, NUM_EXPRESSIONS, NUM_ACTION_UNITS))
+    count_severity = np.zeros(NUM_CLASSES)
+    count_asymmetry = np.zeros(NUM_CLASSES)
 
     for subject_index in range(len(subjects)):
-        score_class = np.argmax(y[subject_index, 0])
-        side_class = np.argmax(y[subject_index, 1])
-        score_exp_fa[score_class] += X_fa[subject_index]
-        score_exp_au[score_class] += X_au[subject_index]
-        side_exp_fa[side_class] += X_fa[subject_index]
-        side_exp_au[side_class] += X_au[subject_index]
-        count_score[score_class] += 1
-        count_side[side_class] += 1
+        severity_class = np.argmax(y[subject_index, 0])
+        asymmetry_class = np.argmax(y[subject_index, 1])
+        severity_exp_fa[severity_class] += X_fa[subject_index]
+        severity_exp_au[severity_class] += X_au[subject_index]
+        asymmetry_exp_fa[asymmetry_class] += X_fa[subject_index]
+        asymmetry_exp_au[asymmetry_class] += X_au[subject_index]
+        count_severity[severity_class] += 1
+        count_asymmetry[asymmetry_class] += 1
 
     for class_index in range(NUM_CLASSES):
-        score_exp_fa[class_index] /= count_score[class_index]
-        score_exp_au[class_index] /= count_score[class_index]
-        side_exp_fa[class_index] /= count_side[class_index]
-        side_exp_au[class_index] /= count_side[class_index]
+        severity_exp_fa[class_index] /= count_severity[class_index]
+        severity_exp_au[class_index] /= count_severity[class_index]
+        asymmetry_exp_fa[class_index] /= count_asymmetry[class_index]
+        asymmetry_exp_au[class_index] /= count_asymmetry[class_index]
 
-    score_au = np.mean(score_exp_au, axis=1)
-    score_fa = np.mean(score_exp_fa, axis=1)
-    score_exp = np.mean(score_exp_fa, axis=2) + np.mean(score_exp_au, axis=2)
-    side_au = np.mean(side_exp_au, axis=1)
-    side_fa = np.mean(side_exp_fa, axis=1)
-    side_exp = np.mean(side_exp_fa, axis=2) + np.mean(side_exp_au, axis=2)
+    severity_au = np.mean(severity_exp_au, axis=1)
+    severity_fa = np.mean(severity_exp_fa, axis=1)
+    severity_exp = np.mean(severity_exp_fa, axis=2) + np.mean(severity_exp_au, axis=2)
+    asymmetry_au = np.mean(asymmetry_exp_au, axis=1)
+    asymmetry_fa = np.mean(asymmetry_exp_fa, axis=1)
+    asymmetry_exp = np.mean(asymmetry_exp_fa, axis=2) + np.mean(asymmetry_exp_au, axis=2)
 
-    with pd.ExcelWriter(OUTPUT_PATH) as writer:
-        pd.DataFrame(score_au).to_excel(writer, sheet_name="Score AU")
-        pd.DataFrame(score_fa).to_excel(writer, sheet_name="Score FA")
-        pd.DataFrame(score_exp).to_excel(writer, sheet_name="Score EXP")
-        pd.DataFrame(side_au).to_excel(writer, sheet_name="Side AU")
-        pd.DataFrame(side_fa).to_excel(writer, sheet_name="Side FA")
-        pd.DataFrame(side_exp).to_excel(writer, sheet_name="Side EXP")
+    severity_au_relative = severity_au[0] - severity_au
+    severity_fa_relative = severity_fa[0] - severity_fa
+    severity_exp_relative = severity_exp[0] - severity_exp
+    asymmetry_au_relative = asymmetry_au[0] - asymmetry_au
+    asymmetry_fa_relative = asymmetry_fa[0] - asymmetry_fa
+    asymmetry_exp_relative = asymmetry_exp[0] - asymmetry_exp
+
+    with pd.ExcelWriter(args.output_path) as writer:
+        pd.DataFrame(severity_au).to_excel(writer, sheet_name="Severity AU")
+        pd.DataFrame(severity_fa).to_excel(writer, sheet_name="Severity FA")
+        pd.DataFrame(severity_exp).to_excel(writer, sheet_name="Severity EXP")
+        pd.DataFrame(asymmetry_au).to_excel(writer, sheet_name="Asymmetry AU")
+        pd.DataFrame(asymmetry_fa).to_excel(writer, sheet_name="Asymmetry FA")
+        pd.DataFrame(asymmetry_exp).to_excel(writer, sheet_name="Asymmetry EXP")
+        pd.DataFrame(severity_au_relative).to_excel(writer, sheet_name="Severity AU vs Absence")
+        pd.DataFrame(severity_fa_relative).to_excel(writer, sheet_name="Severity FA vs Absence")
+        pd.DataFrame(severity_exp_relative).to_excel(writer, sheet_name="Severity EXP vs Absence")
+        pd.DataFrame(asymmetry_au_relative).to_excel(writer, sheet_name="Asymmetry AU vs Non-Asym")
+        pd.DataFrame(asymmetry_fa_relative).to_excel(writer, sheet_name="Asymmetry FA vs Non-Asym")
+        pd.DataFrame(asymmetry_exp_relative).to_excel(writer, sheet_name="Asymmetry EXP vs Non-Asym")
 
 
 if __name__ == "__main__":
