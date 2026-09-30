@@ -7,7 +7,7 @@ HGNN combines facial action units and landmark-derived geometric measurements fr
 - **Severity grading:** absence, moderate, or severe facial weakness.
 - **Asymmetry prediction:** non-asymmetry, left-side predominance, or right-side predominance.
 
-The repository includes the HGNN model, training and evaluation, machine-learning and deep-learning comparisons, ablation experiment, ROC analysis, Shaply interpretation, data distribution, landmark detection, and statistical test. See the [manuscript](paper.pdf) and [supplementary material](supplementary.pdf) for the study design and scientific context.
+The repository includes the HGNN model, training and evaluation, machine-learning and deep-learning comparisons, ablation experiment, ROC analysis, Shaply interpretation, data distribution, landmark detection, and statistical test. See the [manuscript](paper.pdf) for the study design and scientific context.
 
 ![Overview of the facial weakness assessment workflow](assets/figure_1.png)
 
@@ -59,7 +59,7 @@ The graph encoders contain three graph-convolution layers with widths `32 → 64
 | [facial_asymmetry_func.py](facial_asymmetry_func.py)           | Geometric facial measurement functions for asymmetrical features                                |
 | [util.py](util.py)                                             | Training data scaling, fold preparation, learning-rate/early-stop function, and metric printing |
 | [environment.yml](environment.yml)                             | Conda and Python dependencies                                                                   |
-| [paper.pdf](paper.pdf), [supplementary.pdf](supplementary.pdf) | Paper and supplementary documents                                                               |
+| [paper.pdf](paper.pdf) | Paper documents                                                               |
 
 ## Environment
 
